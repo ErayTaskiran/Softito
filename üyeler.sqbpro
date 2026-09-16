@@ -98,6 +98,7 @@ FROM odunc o
 JOIN uyeler u ON o.uye_id = u.id 
 JOIN kitaplar k ON o.kitap_id = k.id 
 WHERE o.gun &gt; 30;
+
 -- sadece Erzincan üyeleri
 SELECT u.ad AS uye_adi, k.ad AS kitap_adi, o.gun
 FROM odunc o JOIN uyeler u ON o.uye_id = u.id
@@ -174,4 +175,4 @@ CREATE INDEX idx_uyeler_ad ON uyeler(ad);
 ALTER TABLE uyeler ADD COLUMN eposta TEXT;
 CREATE UNIQUE INDEX idx_uyeler_eposta ON uyeler(eposta);
 
-	</sql><current_tab id="0"/></tab_sql></sqlb_project>
+	
