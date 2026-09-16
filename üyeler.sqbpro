@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="üyeler.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1116"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="uyeler" custom_title="0" dock_id="8" table="4,6:mainuyeler"/><dock_state state="000000ff00000000fd0000000100000002000003af0000035afc0100000008fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000000003760000000000000000fb000000160064006f0063006b00420072006f00770073006500340100000000000003760000000000000000fb000000160064006f0063006b00420072006f00770073006500350100000000000003760000000000000000fb000000160064006f0063006b00420072006f00770073006500360100000000000003760000000000000000fb000000160064006f0063006b00420072006f00770073006500370100000000000003760000000000000000fb000000160064006f0063006b00420072006f00770073006500380100000000000003af0000016300ffffff000003af0000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="kitaplar" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="86"/><column index="2" value="164"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="odunc" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="88"/><column index="2" value="98"/><column index="3" value="95"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="sqlite_sequence" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="44"/><column index="2" value="32"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="uyeler" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort><column index="1" mode="0"/></sort><column_widths><column index="1" value="23"/><column index="2" value="54"/><column index="3" value="35"/><column index="4" value="55"/><column index="5" value="114"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">3PRAGMA foreign_keys = ON;
+
+
+CREATE TABLE uyeler (
+     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ad TEXT NOT NULL,
+    yas INTEGER CHECK (yas &gt; 13),
+    sehir TEXT DEFAULT 'Erzincan',
+    kayit TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE kitaplar (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ad TEXT NOT NULL UNIQUE
+);
+CREATE TABLE odunc (
+    uye_id INTEGER,
+    kitap_id INTEGER,
+    gun INTEGER,
+	
+	PRIMARY KEY (uye_id, kitap_id),
+
+    FOREIGN KEY (uye_id)
+        REFERENCES uyeler(id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (kitap_id)
+        REFERENCES kitaplar(id)
+);
+INSERT INTO kitaplar (ad) VALUES
+('Suç ve Ceza'),
+('Aklından Bir Sayı Tut'),
+('1984'),
+('Hayvan Çiftliği'),
+('Klon');
+
+INSERT INTO uyeler (ad, yas, sehir) VALUES
+('Ahmet ', 20, 'İstanbul'),
+('Mehmet', 17, 'Ankara'),
+('Murat ', 25, 'İzmir'),
+('Eray', 19, 'İstanbul'),
+('Ünsal', 32, 'Ankara'),
+('Taşkıran', 16, 'Bursa');
+
+
+INSERT INTO uyeler (ad, yas) VALUES
+('Can', 22),
+('Selin', 24),
+('Burak', 18),
+('Ece', 27);
+
+INSERT INTO uyeler (ad, yas)   --yaş&gt; 13 olmalı
+VALUES ('Ali', 10);
+
+INSERT INTO odunc (uye_id, kitap_id, gun)    -- üye listesinde yok (foreign) 
+VALUES (11, 1, 3);
+
+INSERT INTO odunc (uye_id, kitap_id, gun) VALUES
+(1, 1, 10),
+(1, 2, 35),
+
+(2, 2, 20),
+(2, 3, 15),
+
+(3, 1, 40),
+(3, 4, 18),
+
+(4, 3, 12),
+(4, 5, 33),
+
+(5, 1, 25),
+(5, 5, 45),
+
+(6, 2, 8),
+(6, 4, 17),
+
+(7, 1, 31),
+(7, 3, 22),
+
+(8, 2, 14),
+(8, 5, 38),
+
+(9, 3, 9),
+(9, 4, 26),
+
+(10, 4, 16),
+(10, 5, 29);
+
+-- üye adı, kitap adı, gün sayısı 
+SELECT u.ad AS uye_adi, k.ad AS kitap_adi, o.gun 
+FROM odunc o
+JOIN uyeler u ON o.uye_id = u.id
+JOIN kitaplar k ON o.kitap_id = k.id;
+ 
+ -- 30 günden uzun tutulan kitaplar
+SELECT u.ad AS uye_adi, k.ad AS kitap_adi, o.gun 
+FROM odunc o
+JOIN uyeler u ON o.uye_id = u.id 
+JOIN kitaplar k ON o.kitap_id = k.id 
+WHERE o.gun &gt; 30;
+-- sadece Erzincan üyeleri
+SELECT u.ad AS uye_adi, k.ad AS kitap_adi, o.gun
+FROM odunc o JOIN uyeler u ON o.uye_id = u.id
+JOIN kitaplar k ON o.kitap_id = k.id
+WHERE u.sehir = 'Erzincan';
+
+-- ortalama süre, kitaap sayısı, maksimum süre
+SELECT  u.id, u.ad, 
+AVG(o.gun) AS ortalama_gun, 
+COUNT(o.kitap_id) AS kitap_sayisi,
+MAX(o.gun) AS en_uzun_sure 
+FROM uyeler u 
+JOIN odunc o ON u.id = o.uye_id
+GROUP BY u.id, u.ad;
+
+-- ortalama 20 günün üzerinde olanlar
+SELECT u.ad, 
+ROUND(AVG(o.gun), 2) AS ortalama_gun, 
+COUNT(o.kitap_id) AS kitap_sayisi, 
+MAX(o.gun) AS en_uzun_sure 
+FROM uyeler u 
+JOIN odunc o ON u.id = o.uye_id 
+GROUP BY u.id, u.ad 
+HAVING AVG(o.gun) &gt; 20;
+
+-- her kitabın kaç kez ödünç alındığı
+SELECT k.ad AS kitap_adi,
+COUNT(o.uye_id) AS odunc_sayisi
+FROM kitaplar k
+JOIN odunc o ON k.id = o.kitap_id 
+GROUP BY k.id, k.ad;
+	
+	-- şehirlere göre üye sayısı
+SELECT sehir, 
+COUNT(*) AS uye_sayisi 
+FROM uyeler 
+GROUP BY sehir 
+ORDER BY uye_sayisi DESC;
+
+-- kitabı 30 günden fazla tutanlar
+SELECT ad FROM uyeler
+ WHERE id IN (
+ SELECT uye_id FROM odunc 
+ WHERE gun &gt; 30 );
+
+ -- ödünç alınmayan kitaplar
+SELECT * FROM kitaplar WHERE id NOT IN ( SELECT kitap_id FROM odunc);	
+
+--case ( ödünç kayıtları)
+SELECT u.ad AS uye_adi, k.ad AS kitap_adi, o.gun,
+
+    CASE
+        WHEN o.gun &gt; 30 THEN 'Gecikmiş'
+        WHEN o.gun BETWEEN 15 AND 30 THEN 'Uyarı'
+        ELSE 'Normal'
+    END AS durum
+
+FROM odunc o
+JOIN uyeler u ON o.uye_id = u.id
+JOIN kitaplar k ON o.kitap_id = k.id;
+
+-- üyeleri yaşlarına  göre
+SELECT ad, yas,
+
+    CASE
+        WHEN yas &lt;= 18 THEN 'Genç'
+        ELSE 'Yetişkin'
+    END AS yas_grubu
+
+FROM uyeler;
+
+--ındex
+CREATE INDEX idx_uyeler_ad ON uyeler(ad);
+ALTER TABLE uyeler ADD COLUMN eposta TEXT;
+CREATE UNIQUE INDEX idx_uyeler_eposta ON uyeler(eposta);
+
+	</sql><current_tab id="0"/></tab_sql></sqlb_project>
