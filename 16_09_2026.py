@@ -12,7 +12,7 @@ print ('Eray Ünsal' , 'Taşkıran')
 print(23432432)
 print('HEelo dünya')
 
-print("Eray")  # Ekrana Eray yazdırır
+print("Eray")
 
 """
 Ad: Eray
